@@ -1,14 +1,18 @@
-import { NgTemplateOutlet, TitleCasePipe } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, map, startWith, tap } from 'rxjs';
 
+import { Section, SectionNavComponent } from '../../../common/section-nav/section-nav.component';
 import { TypeBadgeComponent } from '../../../common/type-badge/type-badge.component';
 import { TeamsPanelComponent } from '../../../teams/components/teams-panel/teams-panel.component';
+import { TeamStore } from '../../../teams/state/team.store';
+import { FilterSheetComponent } from '../../components/filter-sheet/filter-sheet.component';
+import { PageSizeToggleComponent } from '../../components/page-size-toggle/page-size-toggle.component';
 import { PokemonDetailComponent } from '../../components/pokemon-detail/pokemon-detail.component';
+import { TypeFilterComponent } from '../../components/type-filter/type-filter.component';
 import {
-  PAGE_SIZES,
   PageSize,
   SortKey,
   SortState,
@@ -41,12 +45,15 @@ const DEFAULT_SORT: SortState = { key: 'id', direction: 'asc' };
 @Component({
   selector: 'app-pokedex-page',
   imports: [
+    FilterSheetComponent,
     NgTemplateOutlet,
+    PageSizeToggleComponent,
     PokemonDetailComponent,
     ReactiveFormsModule,
+    SectionNavComponent,
     TeamsPanelComponent,
-    TitleCasePipe,
     TypeBadgeComponent,
+    TypeFilterComponent,
   ],
   templateUrl: './pokedex-page.component.html',
   styleUrl: './pokedex-page.component.scss',
@@ -54,12 +61,11 @@ const DEFAULT_SORT: SortState = { key: 'id', direction: 'asc' };
 })
 export class PokedexPageComponent implements OnInit {
   private readonly store = inject(PokemonStore);
+  private readonly teamStore = inject(TeamStore);
 
   protected readonly idColumn = COLUMNS[0];
   protected readonly nameColumn = COLUMNS[1];
   protected readonly statColumns = COLUMNS.slice(2);
-  protected readonly pageSizes = PAGE_SIZES;
-
   protected readonly pokemon = toSignal(this.store.items$, { initialValue: [] });
   protected readonly status = toSignal(this.store.status$, { initialValue: 'idle' });
   protected readonly error = toSignal(this.store.error$, { initialValue: null });
@@ -69,6 +75,12 @@ export class PokedexPageComponent implements OnInit {
   protected readonly sort = signal<SortState>(DEFAULT_SORT);
   protected readonly pageSize = signal<PageSize>(25);
   protected readonly selectedId = signal<number | null>(null);
+  /** Which section is shown on narrow screens, where the list and teams no longer fit side by side. */
+  protected readonly view = signal<Section>('pokedex');
+  protected readonly filtersOpen = signal(false);
+  protected readonly teamCount = toSignal(this.teamStore.teams$.pipe(map((t) => t.length)), {
+    initialValue: 0,
+  });
   private readonly pageIndex = signal(0);
 
   private readonly searchText = toSignal(this.searchControl.valueChanges, { initialValue: '' });
@@ -122,15 +134,17 @@ export class PokedexPageComponent implements OnInit {
     this.store.load(true);
   }
 
-  protected onTypeChange(value: string): void {
-    this.selectedType.set(value || null);
+  /** Clicking the active type again clears the filter. */
+  protected selectType(type: string | null): void {
+    this.selectedType.update((current) => (current === type ? null : type));
     this.pageIndex.set(0);
   }
 
-  protected onPageSizeChange(value: string): void {
-    this.pageSize.set(Number(value) as PageSize);
+  protected setPageSize(size: PageSize): void {
+    this.pageSize.set(size);
     this.pageIndex.set(0);
   }
+
 
   /** Clicking the active column flips direction; a new column starts high-to-low for stats. */
   protected sortBy(column: Column): void {
@@ -158,6 +172,12 @@ export class PokedexPageComponent implements OnInit {
 
   protected goToPage(index: number): void {
     this.pageIndex.set(Math.max(0, Math.min(index, this.totalPages() - 1)));
+  }
+
+  protected resetFilters(): void {
+    this.selectedType.set(null);
+    this.pageSize.set(25);
+    this.pageIndex.set(0);
   }
 
   protected clearFilters(): void {

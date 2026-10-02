@@ -1,13 +1,17 @@
 :root {
-  --color-background: #0f1115;
-  --color-surface: #171a21;
-  --color-surface-raised: #1f232c;
-  --color-border: #2a2f3a;
-  --color-text: #e6e8ee;
-  --color-text-muted: #9aa1b2;
-  --color-primary: #e3350d;
-  --color-danger: #ef4444;
-  --color-success: #22c55e;
+  --color-background: #0b1a3a;
+  --color-surface: #11264f;
+  --color-surface-raised: #183263;
+  --color-border: #26457f;
+  --color-text: #f5f7ff;
+  --color-text-muted: #a8b7dc;
+  --color-primary: #ffcb05;
+  --color-primary-strong: #f5a800;
+  --color-on-primary: #1b1b2f;
+  --color-accent: #ff7a1a;
+  --color-accent-soft: rgb(255 122 26 / 0.14);
+  --color-danger: #ff5a5f;
+  --color-success: #3ddc84;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -42,7 +46,12 @@ body {
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: var(--font-size-md);
   line-height: 1.5;
-  background: var(--color-background);
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 85% -10%, rgb(255 203 5 / 0.12), transparent 60%),
+    radial-gradient(900px 500px at -10% 0%, rgb(255 122 26 / 0.1), transparent 60%),
+    var(--color-background);
+  background-attachment: fixed;
   color: var(--color-text);
 }
 

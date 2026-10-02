@@ -1,0 +1,93 @@
+@use '../../../common/styles/shared' as *;
+
+.filter-sheet {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  border-top: 3px solid var(--color-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -16px 40px rgb(0 0 0 / 0.5);
+  animation: filter-sheet-up 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 79;
+    background: rgb(3 10 30 / 0.6);
+    backdrop-filter: blur(2px);
+  }
+
+  &__handle {
+    align-self: center;
+    width: 40px;
+    height: 4px;
+    margin-top: var(--space-2);
+    border-radius: 999px;
+    background: var(--color-border);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-5);
+  }
+
+  &__title {
+    @include card-title;
+  }
+
+  &__clear {
+    padding: var(--space-2) 0;
+    border: none;
+    background: none;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-primary);
+    cursor: pointer;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: 0 var(--space-5) var(--space-5);
+    overflow-y: auto;
+  }
+
+  &__label {
+    @include field-label;
+    margin-top: var(--space-2);
+  }
+
+  &__footer {
+    padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__done {
+    @include button-primary;
+    width: 100%;
+    height: 48px;
+    border-radius: 999px;
+  }
+}
+
+@keyframes filter-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

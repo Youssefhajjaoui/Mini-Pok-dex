@@ -1,0 +1,34 @@
+<div class="filter-sheet__backdrop" (click)="closed.emit()"></div>
+
+<section
+  class="filter-sheet"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="filter-sheet-title"
+>
+  <span class="filter-sheet__handle" aria-hidden="true"></span>
+
+  <header class="filter-sheet__header">
+    <h2 id="filter-sheet-title" class="filter-sheet__title">Filters</h2>
+    <button type="button" class="filter-sheet__clear" (click)="cleared.emit()">Reset</button>
+  </header>
+
+  <div class="filter-sheet__body">
+    <h3 class="filter-sheet__label">Type</h3>
+    <app-type-filter
+      [types]="types()"
+      [selected]="selectedType()"
+      [loading]="loading()"
+      (selectedChange)="typeChange.emit($event)"
+    />
+
+    <h3 class="filter-sheet__label">Per page</h3>
+    <app-page-size-toggle [value]="pageSize()" (valueChange)="pageSizeChange.emit($event)" />
+  </div>
+
+  <footer class="filter-sheet__footer">
+    <button #doneButton type="button" class="filter-sheet__done" (click)="closed.emit()">
+      Show {{ resultCount() }} Pokémon
+    </button>
+  </footer>
+</section>

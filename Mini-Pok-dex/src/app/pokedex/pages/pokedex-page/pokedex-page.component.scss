@@ -11,15 +11,41 @@
 
   &__header {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+    align-items: center;
+    gap: var(--space-4);
     margin-bottom: var(--space-6);
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      min-width: 0;
+    }
   }
 
   &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     font-size: 1.75rem;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.2;
+    letter-spacing: -0.01em;
+
+    &::before {
+      @include pokeball;
+      content: '';
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      box-shadow: 0 0 0 2px var(--color-primary);
+    }
+  }
+
+  &__title-text {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    background-clip: text;
+    color: transparent;
   }
 
   &__subtitle {
@@ -35,6 +61,11 @@
 
     @media (max-width: 1200px) {
       grid-template-columns: minmax(0, 1fr);
+
+      &:not(.pokedex__layout--teams) .pokedex__sidebar,
+      &--teams .pokedex__card {
+        display: none;
+      }
     }
   }
 
@@ -44,6 +75,9 @@
 
     @media (max-width: 1200px) {
       position: static;
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
     }
   }
 
@@ -56,47 +90,184 @@
 
   &__toolbar {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: var(--space-3);
+    flex-direction: column;
+    gap: var(--space-4);
     padding: var(--space-5);
     border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(180deg, rgb(255 203 5 / 0.06), transparent);
   }
 
-  &__field {
+  &__toolbar-row {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+
+    @media (max-width: 768px) {
+      flex-wrap: nowrap;
+    }
+  }
+
+  &__search {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: min(100%, 260px);
+
+    @media (max-width: 768px) {
+      min-width: 0;
+    }
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: var(--space-4);
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  &__search-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 96px 0 48px;
+    border: 2px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-background);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:hover {
+      border-color: var(--color-text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgb(255 203 5 / 0.18);
+    }
+
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      padding-right: var(--space-4);
+    }
+  }
+
+  &__search-count {
+    position: absolute;
+    right: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    background: var(--color-surface-raised);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    color: var(--color-primary);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  // Phones get a Filters button and bottom sheet instead of the inline chips and page size
+
+  &__desktop-only {
+    @media (max-width: 768px) {
+      display: none !important;
+    }
+  }
+
+  &__mobile-only {
+    @media (min-width: 769px) {
+      display: none !important;
+    }
+  }
+
+  &__filter-button {
+    display: none;
+    flex-shrink: 0;
+    align-items: center;
     gap: var(--space-2);
-    min-width: 120px;
+    height: 48px;
+    padding: 0 var(--space-4);
+    border: 2px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-background);
+    font-weight: 700;
+    cursor: pointer;
 
-    &--search {
-      flex: 1;
-      min-width: 220px;
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    &:hover,
+    &[aria-expanded='true'] {
+      border-color: var(--color-primary);
+    }
+
+    @media (max-width: 768px) {
+      display: inline-flex;
     }
   }
 
-  &__label {
-    @include field-label;
+  &__filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    font-size: var(--font-size-xs);
+    color: var(--color-on-primary);
   }
 
-  &__control {
-    @include control;
+  &__active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
 
-    &--select {
-      min-width: 140px;
-      padding-right: 36px;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa1b2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right var(--space-3) center;
-      cursor: pointer;
+  &__active-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 32px;
+    padding: 0 var(--space-3) 0 var(--space-1);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface-raised);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    cursor: pointer;
 
-      option {
-        background: var(--color-surface-raised);
-        color: var(--color-text);
-      }
+    &:hover {
+      border-color: var(--color-primary);
+      color: var(--color-text);
     }
   }
+
 
   // Table
 
@@ -183,7 +354,7 @@
 
     &--selected,
     &--selected:hover {
-      background: rgb(227 53 13 / 0.12);
+      background: linear-gradient(90deg, rgb(255 203 5 / 0.18), rgb(255 203 5 / 0.04) 70%);
       box-shadow: inset 3px 0 0 var(--color-primary);
     }
   }
@@ -218,6 +389,7 @@
 
     &--total {
       font-weight: 700;
+      color: var(--color-accent);
     }
   }
 
@@ -245,9 +417,12 @@
     color: inherit;
     cursor: pointer;
 
-    &:hover,
-    &--active {
+    &:hover {
       color: var(--color-text);
+    }
+
+    &--active {
+      color: var(--color-primary);
     }
   }
 

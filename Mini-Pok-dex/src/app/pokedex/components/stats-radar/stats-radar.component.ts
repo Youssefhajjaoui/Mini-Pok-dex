@@ -16,9 +16,10 @@ const INDICATORS = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'].ma
 }));
 
 // ECharts draws on a canvas, so it cannot read the CSS variables; these mirror styles.scss.
-const COLOR_PRIMARY = '#e3350d';
-const COLOR_BORDER = '#2a2f3a';
-const COLOR_TEXT_MUTED = '#9aa1b2';
+const COLOR_PRIMARY = '#ffcb05';
+const COLOR_ACCENT = '#ff7a1a';
+const COLOR_BORDER = '#26457f';
+const COLOR_TEXT_MUTED = '#a8b7dc';
 
 @Component({
   selector: 'app-stats-radar',
@@ -77,7 +78,7 @@ export class StatsRadarComponent {
         symbolSize: 4,
         lineStyle: { color: COLOR_PRIMARY, width: 2 },
         itemStyle: { color: COLOR_PRIMARY },
-        areaStyle: { color: COLOR_PRIMARY, opacity: 0.25 },
+        areaStyle: { color: COLOR_ACCENT, opacity: 0.35 },
         data: [],
       },
     ],

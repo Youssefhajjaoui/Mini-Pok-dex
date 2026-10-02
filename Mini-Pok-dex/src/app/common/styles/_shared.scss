@@ -1,7 +1,9 @@
 @mixin card {
   border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-primary);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: 0 12px 32px rgb(3 10 30 / 0.35);
 }
 
 @mixin card-title {
@@ -51,13 +53,14 @@
   padding: 0 var(--space-5);
   border: none;
   border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: #fff;
-  font-weight: 600;
+  background: linear-gradient(180deg, var(--color-primary), var(--color-primary-strong));
+  color: var(--color-on-primary);
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgb(255 203 5 / 0.25);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.1);
+    filter: brightness(1.06);
   }
 
   &:disabled {
@@ -79,7 +82,8 @@
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    border-color: var(--color-text-muted);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
   }
 
   &:disabled {
@@ -110,6 +114,19 @@
       background-position: -200% 0;
     }
   }
+}
+
+@mixin pokeball {
+  border: 2px solid var(--color-on-primary);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff 0 3px, var(--color-on-primary) 3px 5px, transparent 5px),
+    linear-gradient(
+      180deg,
+      var(--color-accent) 0 46%,
+      var(--color-on-primary) 46% 54%,
+      #fff 54%
+    );
 }
 
 @mixin visually-hidden {

@@ -1,0 +1,48 @@
+<button
+  type="button"
+  class="section-nav__toggle"
+  aria-label="Open menu"
+  aria-controls="section-nav"
+  [attr.aria-expanded]="open()"
+  (click)="open.set(!open())"
+>
+  <span class="section-nav__toggle-icon" aria-hidden="true"></span>
+</button>
+
+@if (open()) {
+  <div class="section-nav__backdrop" (click)="open.set(false)"></div>
+}
+<nav
+  id="section-nav"
+  class="section-nav"
+  [class.section-nav--open]="open()"
+  aria-label="Sections"
+>
+  <p class="section-nav__title">Menu</p>
+  <button
+    type="button"
+    class="section-nav__item"
+    [class.section-nav__item--active]="active() === 'pokedex'"
+    [attr.aria-current]="active() === 'pokedex' ? 'page' : null"
+    (click)="select('pokedex')"
+  >
+    <span class="section-nav__icon section-nav__icon--ball" aria-hidden="true"></span>
+    <span class="section-nav__label">
+      Pokédex
+      <small>Browse all Pokémon</small>
+    </span>
+  </button>
+  <button
+    type="button"
+    class="section-nav__item"
+    [class.section-nav__item--active]="active() === 'teams'"
+    [attr.aria-current]="active() === 'teams' ? 'page' : null"
+    (click)="select('teams')"
+  >
+    <span class="section-nav__icon" aria-hidden="true">⚔</span>
+    <span class="section-nav__label">
+      Team builder
+      <small>{{ teamCount() }} {{ teamCount() === 1 ? 'team' : 'teams' }}</small>
+    </span>
+  </button>
+</nav>

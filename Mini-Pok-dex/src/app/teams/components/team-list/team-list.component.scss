@@ -39,7 +39,7 @@
 
     &--selected {
       border-color: var(--color-primary);
-      background: var(--color-surface-raised);
+      background: linear-gradient(90deg, rgb(255 203 5 / 0.16), rgb(255 203 5 / 0.04));
     }
 
     &--pending {
