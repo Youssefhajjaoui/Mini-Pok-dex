@@ -6,6 +6,7 @@ An Angular 20 app that lists the 151 Kanto Pokémon from [PokéAPI](https://beta
 - Detail panel with abilities and an animated radar chart of the base stats
 - Team builder with reactive-form validation and optimistic creation
 - Loading, empty and error (with Retry) states in every view
+- Responsive layout: on mobile a side menu switches between the Pokédex and Teams, and filters open in a bottom sheet
 
 ## Getting started
 
@@ -29,7 +30,7 @@ Start the app in another terminal and open http://localhost:4200:
 npm start           # same as: ng serve
 ```
 
-The Pokémon list comes from the public PokéAPI, so it needs an internet connection. Teams are kept in memory by the mock server and reset when it restarts.
+The Pokémon list comes from the public PokéAPI, so it needs an internet connection. Teams are kept in memory by the mock server and reset to the seed data in `db.js` (2 trainers, 3 teams) when it restarts.
 
 ### Other commands
 
@@ -44,12 +45,15 @@ npm run build               # production build in dist/
 src/app/
   core/graphql/       GraphqlClientService: GraphQL over HttpClient POST, readable errors
   core/charts/        Tree-shaken ECharts build, loaded lazily with the detail panel
-  common/             Toasts, type badge, shared SCSS mixins, LoadStatus type
+  common/
+    components/       Toasts, type badge
+    sidebar/          Mobile side menu (Pokédex / Teams)
+    models/, styles/  LoadStatus type, type colors, shared SCSS mixins
   pokedex/
-    services/         PokéAPI queries (list of 151, abilities per Pokémon) with retry
+    services/         PokéAPI queries (list of 151, Pokémon by id, abilities) with retry
     state/            PokemonStore, AbilitiesStore, pure selectors
     pages/            Pokédex page: table, toolbar, pagination
-    components/       Detail panel, stats radar chart
+    components/       Detail panel, stats radar chart, type filter, page size toggle, mobile filter sheet
   teams/
     services/         Mock server queries and mutations (allTeams, createTeam, deleteTeam)
     state/            TeamStore with optimistic create, team selectors
@@ -69,6 +73,8 @@ Components read store streams through `toSignal` and keep UI state in signals: s
 
 The 151 Kanto Pokémon are fetched once and cached in `PokemonStore`. Search, type filter, sort and pagination run on that cached list as pure functions (`pokemon.selectors.ts`). This keeps sorting and filtering correct across the whole list, which server-side pages would not, and makes every interaction instant. The list is reused by the detail panel and the team builder's autocomplete, so neither refetches it.
 
+Saved teams can contain Pokémon outside Kanto (the seeded "Johto Squad", for example). The teams panel asks `PokemonStore.loadByIds()` for any member that isn't cached. It fetches only those ids, keeps them in a separate cache that the table doesn't use, and merges them into `byId$` so team sprites and summaries stay complete.
+
 ### Optimistic team creation
 
 `TeamStore.create()` inserts the new team immediately with a temporary negative id and a "Saving…" state. When the server answers, the temporary row is replaced by the saved one. If the request fails, only that temporary row is removed (teams changed in the meantime are kept) and an error toast explains what happened. Delete waits for the server and shows a "Deleting…" state on the row.
@@ -79,11 +85,11 @@ Abilities are fetched only when a Pokémon is opened and are cached per Pokémon
 
 ## Tests
 
-18 Vitest tests cover:
+19 Vitest tests cover:
 
 - **Selectors:** search by name or number, type filter, stable sorting, pagination, and the combined RxJS filter pipeline
 - **TeamStore:** optimistic create shows a pending row, replaces it on success, and rolls back with an error toast on failure
-- **PokemonStore:** caches the list, exposes errors, and refetches on Retry
+- **PokemonStore:** caches the list, exposes errors, refetches on Retry, and fetches only uncached ids by id
 - **Validators:** duplicate team names (case-insensitive, debounced) and team size limits (1 to 6)
 
 ## With more time
@@ -92,4 +98,4 @@ Abilities are fetched only when a Pokémon is opened and are cached per Pokémon
 - Edit existing teams and pick a trainer instead of the default one
 - Component tests for the table, detail panel and team builder states
 - End-to-end tests for the demo flow
-- Lint (angular-eslint) and commit message checks in CI
+- Lint (angular-eslint) in CI; commit messages are already checked locally by Husky and commitlint
