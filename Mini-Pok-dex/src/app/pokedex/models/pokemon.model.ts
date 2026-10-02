@@ -25,3 +25,19 @@ export interface PokemonListResponse {
     pokemon_v2_pokemonsprites: { sprites: { front_default?: string | null } | string }[];
   }[];
 }
+
+export interface Ability {
+  name: string;
+  effect: string | null;
+  hidden: boolean;
+}
+
+export interface AbilitiesResponse {
+  pokemon_v2_pokemonability: {
+    is_hidden: boolean;
+    pokemon_v2_ability: {
+      name: string;
+      pokemon_v2_abilityeffecttexts: { short_effect: string }[];
+    } | null;
+  }[];
+}

@@ -2,7 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, retry } from 'rxjs';
 
 import { GraphqlClientService } from '../../core/graphql/graphql-client.service';
-import { Pokemon, PokemonListResponse } from '../models/pokemon.model';
+import {
+  AbilitiesResponse,
+  Ability,
+  Pokemon,
+  PokemonListResponse,
+} from '../models/pokemon.model';
 
 export const POKEAPI_URL = 'https://beta.pokeapi.co/graphql/v1beta';
 export const KANTO_LIMIT = 151;
@@ -21,6 +26,18 @@ const GET_POKEMON_LIST = `
   }
 `;
 
+const GET_ABILITIES = `
+  query GetAbilities($pokemonId: Int!) {
+    pokemon_v2_pokemonability(where: { pokemon_id: { _eq: $pokemonId } }, order_by: { slot: asc }) {
+      is_hidden
+      pokemon_v2_ability {
+        name
+        pokemon_v2_abilityeffecttexts(where: { language_id: { _eq: 9 } }, limit: 1) { short_effect }
+      }
+    }
+  }
+`;
+
 @Injectable({ providedIn: 'root' })
 export class PokemonApiService {
   private readonly graphql = inject(GraphqlClientService);
@@ -32,6 +49,24 @@ export class PokemonApiService {
       .pipe(
         retry({ count: 2, delay: 1000 }),
         map((data) => data.pokemon_v2_pokemon.map(toPokemon)),
+      );
+  }
+
+  /** Fetches the English abilities of one Pokémon, retrying twice on failure. */
+  getAbilities(pokemonId: number): Observable<Ability[]> {
+    return this.graphql
+      .request<AbilitiesResponse>(POKEAPI_URL, GET_ABILITIES, { pokemonId })
+      .pipe(
+        retry({ count: 2, delay: 1000 }),
+        map((data) =>
+          data.pokemon_v2_pokemonability
+            .filter((row) => row.pokemon_v2_ability)
+            .map((row) => ({
+              name: row.pokemon_v2_ability!.name,
+              effect: row.pokemon_v2_ability!.pokemon_v2_abilityeffecttexts[0]?.short_effect ?? null,
+              hidden: row.is_hidden,
+            })),
+        ),
       );
   }
 }
