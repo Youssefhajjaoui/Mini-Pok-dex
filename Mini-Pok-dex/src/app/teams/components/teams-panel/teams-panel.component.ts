@@ -30,6 +30,8 @@ export class TeamsPanelComponent implements OnInit {
     initialValue: new Map<number, Pokemon>(),
   });
 
+  private readonly pokemonStatus = toSignal(this.pokemonStore.status$, { initialValue: 'idle' });
+
   protected readonly selectedTeamId = signal<string | null>(localStorage.getItem(SELECTED_TEAM_KEY));
 
   protected readonly selectedTeam = computed(
@@ -52,6 +54,12 @@ export class TeamsPanelComponent implements OnInit {
       } else {
         localStorage.removeItem(SELECTED_TEAM_KEY);
       }
+    });
+
+    // Teams may reference Pokémon outside the Kanto list; fetch those once the list is in.
+    effect(() => {
+      if (this.pokemonStatus() !== 'success') return;
+      this.pokemonStore.loadByIds(this.teams().flatMap((team) => team.pokemonIds));
     });
   }
 

@@ -12,17 +12,25 @@ import {
 export const POKEAPI_URL = 'https://beta.pokeapi.co/graphql/v1beta';
 export const KANTO_LIMIT = 151;
 
+const POKEMON_FIELDS = `
+  id
+  name
+  height
+  weight
+  pokemon_v2_pokemontypes { pokemon_v2_type { name } }
+  pokemon_v2_pokemonstats { base_stat pokemon_v2_stat { name } }
+  pokemon_v2_pokemonsprites { sprites }
+`;
+
 const GET_POKEMON_LIST = `
   query GetPokemonList($limit: Int!, $offset: Int!) {
-    pokemon_v2_pokemon(limit: $limit, offset: $offset, order_by: { id: asc }) {
-      id
-      name
-      height
-      weight
-      pokemon_v2_pokemontypes { pokemon_v2_type { name } }
-      pokemon_v2_pokemonstats { base_stat pokemon_v2_stat { name } }
-      pokemon_v2_pokemonsprites { sprites }
-    }
+    pokemon_v2_pokemon(limit: $limit, offset: $offset, order_by: { id: asc }) { ${POKEMON_FIELDS} }
+  }
+`;
+
+const GET_POKEMON_BY_IDS = `
+  query GetPokemonByIds($ids: [Int!]!) {
+    pokemon_v2_pokemon(where: { id: { _in: $ids } }, order_by: { id: asc }) { ${POKEMON_FIELDS} }
   }
 `;
 
@@ -46,6 +54,16 @@ export class PokemonApiService {
   getPokemonList(limit = KANTO_LIMIT, offset = 0): Observable<Pokemon[]> {
     return this.graphql
       .request<PokemonListResponse>(POKEAPI_URL, GET_POKEMON_LIST, { limit, offset })
+      .pipe(
+        retry({ count: 2, delay: 1000 }),
+        map((data) => data.pokemon_v2_pokemon.map(toPokemon)),
+      );
+  }
+
+  /** Fetches specific Pokémon by id (e.g. team members outside Kanto), retrying twice on failure. */
+  getPokemonByIds(ids: number[]): Observable<Pokemon[]> {
+    return this.graphql
+      .request<PokemonListResponse>(POKEAPI_URL, GET_POKEMON_BY_IDS, { ids })
       .pipe(
         retry({ count: 2, delay: 1000 }),
         map((data) => data.pokemon_v2_pokemon.map(toPokemon)),

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Subject, firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, of } from 'rxjs';
 
 import { Pokemon } from '../models/pokemon.model';
 import { PokemonApiService } from '../services/pokemon-api.service';
@@ -9,15 +9,17 @@ describe('PokemonStore', () => {
   let store: PokemonStore;
   let response: Subject<Pokemon[]>;
   let getPokemonList: ReturnType<typeof vi.fn>;
+  let getPokemonByIds: ReturnType<typeof vi.fn>;
 
   const status = () => firstValueFrom(store.status$);
 
   beforeEach(() => {
     response = new Subject<Pokemon[]>();
     getPokemonList = vi.fn(() => response);
+    getPokemonByIds = vi.fn();
 
     TestBed.configureTestingModule({
-      providers: [{ provide: PokemonApiService, useValue: { getPokemonList } }],
+      providers: [{ provide: PokemonApiService, useValue: { getPokemonList, getPokemonByIds } }],
     });
     store = TestBed.inject(PokemonStore);
   });
@@ -51,5 +53,22 @@ describe('PokemonStore', () => {
     expect(getPokemonList).toHaveBeenCalledTimes(2);
     expect(await status()).toBe('loading');
     expect(await firstValueFrom(store.error$)).toBeNull();
+  });
+
+  it('fetches only uncached ids by id and merges them into byId$', async () => {
+    store.load();
+    response.next([{ id: 25, name: 'pikachu' } as Pokemon]);
+    response.complete();
+
+    const typhlosion = { id: 157, name: 'typhlosion' } as Pokemon;
+    getPokemonByIds.mockReturnValue(of([typhlosion]));
+
+    store.loadByIds([25, 157, 157]);
+    store.loadByIds([157]);
+
+    expect(getPokemonByIds).toHaveBeenCalledTimes(1);
+    expect(getPokemonByIds).toHaveBeenCalledWith([157]);
+    expect((await firstValueFrom(store.byId$)).get(157)).toBe(typhlosion);
+    expect(await firstValueFrom(store.items$)).toHaveLength(1);
   });
 });
