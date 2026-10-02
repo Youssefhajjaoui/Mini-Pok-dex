@@ -1,25 +1,102 @@
 <main class="pokedex">
   <header class="pokedex__header">
     <h1 class="pokedex__title">Mini Pokédex</h1>
-    @if (status() === 'success') {
-      <p class="pokedex__count">{{ pokemon().length }} Pokémon</p>
-    }
+    <p class="pokedex__subtitle">
+      @if (status() === 'success') {
+        Kanto · {{ pokemon().length }} Pokémon
+      } @else {
+        Kanto
+      }
+    </p>
   </header>
 
   <div class="pokedex__layout">
-    <section class="pokedex__list">
+    <section class="pokedex__card" aria-label="Pokémon list">
+      <div class="pokedex__toolbar">
+        <label class="pokedex__field pokedex__field--search">
+          <span class="pokedex__label">Search</span>
+          <input
+            class="pokedex__control"
+            type="search"
+            [formControl]="searchControl"
+            placeholder="Name or number"
+            autocomplete="off"
+          />
+        </label>
+
+        <label class="pokedex__field">
+          <span class="pokedex__label">Type</span>
+          <select
+            class="pokedex__control pokedex__control--select"
+            (change)="onTypeChange($any($event.target).value)"
+          >
+            <option value="" [selected]="!selectedType()">All types</option>
+            @for (type of types(); track type) {
+              <option [value]="type" [selected]="type === selectedType()">{{ type | titlecase }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="pokedex__field">
+          <span class="pokedex__label">Per page</span>
+          <select
+            class="pokedex__control pokedex__control--select"
+            (change)="onPageSizeChange($any($event.target).value)"
+          >
+            @for (size of pageSizes; track size) {
+              <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
       @switch (status()) {
         @case ('error') {
-          <div class="pokedex__message pokedex__message--error" role="alert">
+          <div class="pokedex__state pokedex__state--error" role="alert">
             <p>We couldn't load the Pokémon. {{ error() }}</p>
-            <button type="button" class="pokedex__retry" (click)="retry()">Retry</button>
+            <button type="button" class="pokedex__button" (click)="retry()">Retry</button>
           </div>
         }
         @case ('success') {
           @if (pokemon().length === 0) {
-            <p class="pokedex__message">No Pokémon to show.</p>
+            <div class="pokedex__state">
+              <p>No Pokémon to show.</p>
+            </div>
+          } @else if (filtered().length === 0) {
+            <div class="pokedex__state">
+              <p>No Pokémon match that search.</p>
+              @if (hasFilters()) {
+                <button type="button" class="pokedex__button" (click)="clearFilters()">
+                  Clear filters
+                </button>
+              }
+            </div>
           } @else {
             <ng-container *ngTemplateOutlet="table" />
+            <nav class="pokedex__footer" aria-label="Pagination">
+              <span>{{ rangeStart() }}–{{ rangeEnd() }} of {{ filtered().length }}</span>
+              <div class="pokedex__pages">
+                <button
+                  type="button"
+                  class="pokedex__page-button"
+                  [disabled]="currentPage() === 0"
+                  (click)="goToPage(currentPage() - 1)"
+                >
+                  Previous
+                </button>
+                <span class="pokedex__page-label">
+                  Page {{ currentPage() + 1 }} of {{ totalPages() }}
+                </span>
+                <button
+                  type="button"
+                  class="pokedex__page-button"
+                  [disabled]="currentPage() >= totalPages() - 1"
+                  (click)="goToPage(currentPage() + 1)"
+                >
+                  Next
+                </button>
+              </div>
+            </nav>
           }
         }
         @default {
@@ -28,37 +105,70 @@
       }
     </section>
 
-    <aside class="pokedex__teams">
+    <aside class="pokedex__sidebar">
       <app-teams-panel />
     </aside>
   </div>
+
+  @if (selectedId(); as id) {
+    <app-pokemon-detail [pokemonId]="id" (closed)="closeDetail()" />
+  }
 </main>
+
+<ng-template #sortHeader let-column>
+  <th
+    [class.pokedex__cell--num]="column.numeric"
+    [attr.aria-sort]="ariaSort(column)"
+  >
+    <button
+      type="button"
+      class="pokedex__sort"
+      [class.pokedex__sort--active]="sort().key === column.key"
+      (click)="sortBy(column)"
+    >
+      {{ column.label }}
+      <span class="pokedex__sort-icon" aria-hidden="true">
+        @if (sort().key === column.key) {
+          {{ sort().direction === 'asc' ? '▲' : '▼' }}
+        } @else {
+          ↕
+        }
+      </span>
+    </button>
+  </th>
+</ng-template>
 
 <ng-template #table>
   <div class="pokedex__table-wrapper">
     <table class="pokedex__table">
       <thead>
         <tr>
-          <th>#</th>
-          <th></th>
-          <th>Name</th>
+          <ng-container *ngTemplateOutlet="sortHeader; context: { $implicit: idColumn }" />
+          <th><span class="pokedex__visually-hidden">Sprite</span></th>
+          <ng-container *ngTemplateOutlet="sortHeader; context: { $implicit: nameColumn }" />
           <th>Types</th>
-          <th class="pokedex__num">HP</th>
-          <th class="pokedex__num">Attack</th>
-          <th class="pokedex__num">Defense</th>
-          <th class="pokedex__num">Sp. Atk</th>
-          <th class="pokedex__num">Sp. Def</th>
-          <th class="pokedex__num">Speed</th>
-          <th class="pokedex__num">Total</th>
+          @for (column of statColumns; track column.key) {
+            <ng-container *ngTemplateOutlet="sortHeader; context: { $implicit: column }" />
+          }
         </tr>
       </thead>
       <tbody>
         @if (status() === 'success') {
-          @for (p of pokemon(); track p.id) {
-            <tr>
-              <td class="pokedex__id">{{ p.id }}</td>
-              <td><img class="pokedex__sprite" [src]="p.sprite" [alt]="p.name" width="56" height="56" loading="lazy" /></td>
-              <td class="pokedex__name">{{ p.name }}</td>
+          @for (p of visible(); track p.id) {
+            <tr
+              class="pokedex__row"
+              [class.pokedex__row--selected]="p.id === selectedId()"
+              tabindex="0"
+              [attr.aria-label]="'Show details for ' + p.name"
+              (click)="selectPokemon(p.id)"
+              (keydown.enter)="selectPokemon(p.id)"
+              (keydown.space)="$event.preventDefault(); selectPokemon(p.id)"
+            >
+              <td class="pokedex__cell--muted">{{ p.id }}</td>
+              <td class="pokedex__cell--sprite">
+                <img class="pokedex__sprite" [src]="p.sprite" [alt]="p.name" width="48" height="48" loading="lazy" />
+              </td>
+              <td class="pokedex__cell--name">{{ p.name }}</td>
               <td>
                 <div class="pokedex__types">
                   @for (type of p.types; track type) {
@@ -66,17 +176,17 @@
                   }
                 </div>
               </td>
-              <td class="pokedex__num">{{ p.hp }}</td>
-              <td class="pokedex__num">{{ p.attack }}</td>
-              <td class="pokedex__num">{{ p.defense }}</td>
-              <td class="pokedex__num">{{ p.specialAttack }}</td>
-              <td class="pokedex__num">{{ p.specialDefense }}</td>
-              <td class="pokedex__num">{{ p.speed }}</td>
-              <td class="pokedex__num pokedex__total">{{ p.total }}</td>
+              <td class="pokedex__cell--num">{{ p.hp }}</td>
+              <td class="pokedex__cell--num">{{ p.attack }}</td>
+              <td class="pokedex__cell--num">{{ p.defense }}</td>
+              <td class="pokedex__cell--num">{{ p.specialAttack }}</td>
+              <td class="pokedex__cell--num">{{ p.specialDefense }}</td>
+              <td class="pokedex__cell--num">{{ p.speed }}</td>
+              <td class="pokedex__cell--num pokedex__cell--total">{{ p.total }}</td>
             </tr>
           }
         } @else {
-          @for (row of skeletonRows; track row) {
+          @for (row of skeletonRows(); track row) {
             <tr aria-hidden="true">
               @for (cell of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; track cell) {
                 <td><span class="pokedex__skeleton"></span></td>
