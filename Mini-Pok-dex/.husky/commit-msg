@@ -1,1 +1,0 @@
-cd Mini-Pok-dex && npx --no -- commitlint --edit "$1"

@@ -10,11 +10,11 @@ An Angular 20 app that lists the 151 Kanto Pokémon from [PokéAPI](https://beta
 
 ## Getting started
 
-Requires Node.js 20.19+ (tested with Node 22). The Angular project lives in the `Mini-Pok-dex/` folder of the repository.
+Requires Node.js 20.19+ (tested with Node 22).
 
 ```bash
 git clone https://github.com/Youssefhajjaoui/Mini-Pok-dex.git
-cd Mini-Pok-dex/Mini-Pok-dex
+cd Mini-Pok-dex
 npm install
 ```
 
