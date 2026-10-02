@@ -28,21 +28,21 @@ import { ToastService } from './toast.service';
   styles: `
     .toast-stack {
       position: fixed;
-      right: 24px;
-      bottom: 24px;
+      right: var(--space-6);
+      bottom: var(--space-6);
       z-index: 1000;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--space-2);
       max-width: 360px;
     }
     .toast {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border-left: 4px solid #22c55e;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--color-success);
       background: var(--color-surface-raised);
       box-shadow: 0 8px 24px rgb(0 0 0 / 40%);
       animation: toast-in 0.2s ease-out;

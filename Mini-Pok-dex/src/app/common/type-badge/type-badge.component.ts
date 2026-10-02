@@ -4,12 +4,18 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-type-badge',
   template: `<span class="type-badge" [class]="'type-badge--' + type()">{{ type() }}</span>`,
   styles: `
+    :host {
+      display: inline-flex;
+    }
     .type-badge {
-      display: inline-block;
-      padding: 2px 10px;
+      display: inline-flex;
+      align-items: center;
+      height: 20px;
+      padding: 0 var(--space-2);
       border-radius: 999px;
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       font-weight: 600;
+      line-height: 1;
       text-transform: capitalize;
       color: #fff;
       background: #68a090;
