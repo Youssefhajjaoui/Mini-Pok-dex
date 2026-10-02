@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, distinctUntilChanged, map } from 'rxjs';
 
 import { LoadStatus } from '../../common/models/load-status';
-import { ToastService } from '../../common/toast/toast.service';
+import { ToastService } from '../../common/components/toast/toast.service';
 import { Team, TeamDraft } from '../models/team.model';
 import { DEFAULT_TRAINER_ID, TeamApiService } from '../services/team-api.service';
 

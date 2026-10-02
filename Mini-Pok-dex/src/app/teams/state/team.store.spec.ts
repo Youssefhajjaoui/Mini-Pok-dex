@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject, firstValueFrom, of } from 'rxjs';
 
-import { ToastService } from '../../common/toast/toast.service';
+import { ToastService } from '../../common/components/toast/toast.service';
 import { Team } from '../models/team.model';
 import { TeamApiService } from '../services/team-api.service';
 import { TeamStore } from './team.store';

@@ -4,8 +4,8 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, map, startWith, tap } from 'rxjs';
 
-import { Section, SectionNavComponent } from '../../../common/section-nav/section-nav.component';
-import { TypeBadgeComponent } from '../../../common/type-badge/type-badge.component';
+import { Section, SectionNavComponent } from '../../../common/sidebar/section-nav.component';
+import { TypeBadgeComponent } from '../../../common/components/type-badge/type-badge.component';
 import { TeamsPanelComponent } from '../../../teams/components/teams-panel/teams-panel.component';
 import { TeamStore } from '../../../teams/state/team.store';
 import { FilterSheetComponent } from '../../components/filter-sheet/filter-sheet.component';

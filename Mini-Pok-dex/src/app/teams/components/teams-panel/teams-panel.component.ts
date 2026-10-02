@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { TypeBadgeComponent } from '../../../common/type-badge/type-badge.component';
+import { TypeBadgeComponent } from '../../../common/components/type-badge/type-badge.component';
 import { Pokemon } from '../../../pokedex/models/pokemon.model';
 import { PokemonStore } from '../../../pokedex/state/pokemon.store';
 import { TeamStore } from '../../state/team.store';

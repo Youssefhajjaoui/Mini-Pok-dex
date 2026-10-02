@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 
-import { TypeBadgeComponent } from '../../../common/type-badge/type-badge.component';
+import { TypeBadgeComponent } from '../../../common/components/type-badge/type-badge.component';
 import { Pokemon } from '../../../pokedex/models/pokemon.model';
 import { PokemonStore } from '../../../pokedex/state/pokemon.store';
 import { MAX_TEAM_SIZE } from '../../models/team.model';

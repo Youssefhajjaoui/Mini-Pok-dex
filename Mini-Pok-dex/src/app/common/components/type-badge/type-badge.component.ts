@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { typeColor } from '../models/type-colors';
+import { typeColor } from '../../models/type-colors';
 
 @Component({
   selector: 'app-type-badge',

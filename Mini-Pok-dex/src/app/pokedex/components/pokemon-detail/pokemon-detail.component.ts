@@ -13,7 +13,7 @@ import {
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
 
-import { TypeBadgeComponent } from '../../../common/type-badge/type-badge.component';
+import { TypeBadgeComponent } from '../../../common/components/type-badge/type-badge.component';
 import { AbilitiesEntry, AbilitiesStore } from '../../state/abilities.store';
 import { PokemonStore } from '../../state/pokemon.store';
 import { StatsRadarComponent } from '../stats-radar/stats-radar.component';
