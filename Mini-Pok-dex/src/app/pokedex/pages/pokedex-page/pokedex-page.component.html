@@ -1,0 +1,90 @@
+<main class="pokedex">
+  <header class="pokedex__header">
+    <h1 class="pokedex__title">Mini Pokédex</h1>
+    @if (status() === 'success') {
+      <p class="pokedex__count">{{ pokemon().length }} Pokémon</p>
+    }
+  </header>
+
+  <div class="pokedex__layout">
+    <section class="pokedex__list">
+      @switch (status()) {
+        @case ('error') {
+          <div class="pokedex__message pokedex__message--error" role="alert">
+            <p>We couldn't load the Pokémon. {{ error() }}</p>
+            <button type="button" class="pokedex__retry" (click)="retry()">Retry</button>
+          </div>
+        }
+        @case ('success') {
+          @if (pokemon().length === 0) {
+            <p class="pokedex__message">No Pokémon to show.</p>
+          } @else {
+            <ng-container *ngTemplateOutlet="table" />
+          }
+        }
+        @default {
+          <ng-container *ngTemplateOutlet="table" />
+        }
+      }
+    </section>
+
+    <aside class="pokedex__teams">
+      <app-teams-panel />
+    </aside>
+  </div>
+</main>
+
+<ng-template #table>
+  <div class="pokedex__table-wrapper">
+    <table class="pokedex__table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th></th>
+          <th>Name</th>
+          <th>Types</th>
+          <th class="pokedex__num">HP</th>
+          <th class="pokedex__num">Attack</th>
+          <th class="pokedex__num">Defense</th>
+          <th class="pokedex__num">Sp. Atk</th>
+          <th class="pokedex__num">Sp. Def</th>
+          <th class="pokedex__num">Speed</th>
+          <th class="pokedex__num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (status() === 'success') {
+          @for (p of pokemon(); track p.id) {
+            <tr>
+              <td class="pokedex__id">{{ p.id }}</td>
+              <td><img class="pokedex__sprite" [src]="p.sprite" [alt]="p.name" width="56" height="56" loading="lazy" /></td>
+              <td class="pokedex__name">{{ p.name }}</td>
+              <td>
+                <div class="pokedex__types">
+                  @for (type of p.types; track type) {
+                    <app-type-badge [type]="type" />
+                  }
+                </div>
+              </td>
+              <td class="pokedex__num">{{ p.hp }}</td>
+              <td class="pokedex__num">{{ p.attack }}</td>
+              <td class="pokedex__num">{{ p.defense }}</td>
+              <td class="pokedex__num">{{ p.specialAttack }}</td>
+              <td class="pokedex__num">{{ p.specialDefense }}</td>
+              <td class="pokedex__num">{{ p.speed }}</td>
+              <td class="pokedex__num pokedex__total">{{ p.total }}</td>
+            </tr>
+          }
+        } @else {
+          @for (row of skeletonRows; track row) {
+            <tr aria-hidden="true">
+              @for (cell of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; track cell) {
+                <td><span class="pokedex__skeleton"></span></td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</ng-template>

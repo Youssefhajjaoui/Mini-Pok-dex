@@ -1,0 +1,148 @@
+.team-list {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+
+  &__title {
+    margin: 0 0 12px;
+    font-size: 1.1rem;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    transition: opacity 0.2s, border-color 0.2s;
+
+    &--selected {
+      border-color: var(--color-primary);
+    }
+
+    &--pending {
+      opacity: 0.55;
+    }
+
+    &--skeleton {
+      height: 72px;
+    }
+  }
+
+  &__select {
+    display: grid;
+    flex: 1;
+    gap: 2px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: progress;
+    }
+  }
+
+  &__name {
+    font-weight: 600;
+  }
+
+  &__meta {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  &__sprites {
+    display: flex;
+    flex-wrap: wrap;
+
+    img {
+      image-rendering: pixelated;
+    }
+  }
+
+  &__delete {
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: none;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-danger);
+      color: var(--color-danger);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__message {
+    padding: 16px;
+    text-align: center;
+    color: var(--color-text-muted);
+
+    p {
+      margin: 0 0 8px;
+    }
+
+    &--error {
+      border: 1px solid var(--color-danger);
+      border-radius: 10px;
+    }
+  }
+
+  &__retry {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-primary);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__skeleton {
+    display: block;
+    width: 100%;
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-raised) 25%,
+      var(--color-border) 50%,
+      var(--color-surface-raised) 75%
+    );
+    background-size: 200% 100%;
+    animation: team-list-shimmer 1.2s infinite linear;
+  }
+}
+
+@keyframes team-list-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}

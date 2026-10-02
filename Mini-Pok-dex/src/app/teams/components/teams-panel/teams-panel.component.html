@@ -1,0 +1,32 @@
+<div class="teams-panel">
+  <app-team-builder />
+
+  @if (selectedTeam(); as team) {
+    <section class="teams-panel__summary" aria-live="polite">
+      <h2 class="teams-panel__summary-title">{{ team.name }}</h2>
+      <p class="teams-panel__stat">
+        Total base stats <strong>{{ totalBaseStats() }}</strong>
+      </p>
+      <div class="teams-panel__types">
+        @for (entry of typeDistribution(); track entry.type) {
+          <span class="teams-panel__type">
+            <app-type-badge [type]="entry.type" />
+            <span class="teams-panel__type-count">×{{ entry.count }}</span>
+          </span>
+        }
+      </div>
+    </section>
+  }
+
+  <app-team-list
+    [teams]="teams()"
+    [status]="status()"
+    [error]="error()"
+    [pokemonById]="pokemonById()"
+    [selectedId]="selectedTeamId()"
+    [deletingIds]="deletingIds()"
+    (teamSelected)="selectTeam($event)"
+    (teamDeleted)="deleteTeam($event)"
+    (retried)="retry()"
+  />
+</div>

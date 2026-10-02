@@ -1,0 +1,44 @@
+.teams-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__summary {
+    padding: 16px;
+    border: 1px solid var(--color-primary);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+
+  &__summary-title {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+  }
+
+  &__stat {
+    margin: 0 0 10px;
+    color: var(--color-text-muted);
+
+    strong {
+      color: var(--color-text);
+      font-size: 1.1rem;
+    }
+  }
+
+  &__types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__type-count {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+}

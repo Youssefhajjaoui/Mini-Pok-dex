@@ -1,0 +1,115 @@
+<form class="team-builder" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h2 class="team-builder__title">Build a team</h2>
+
+  <label class="team-builder__label" for="team-name">Team name</label>
+  <input
+    id="team-name"
+    class="team-builder__input"
+    [class.team-builder__input--invalid]="showErrors('name')"
+    formControlName="name"
+    placeholder="e.g. Water Squad"
+    autocomplete="off"
+  />
+  @if (showErrors('name')) {
+    <p class="team-builder__error" role="alert">
+      @if (form.controls.name.hasError('required')) {
+        Give your team a name.
+      } @else if (form.controls.name.hasError('minlength')) {
+        The name needs at least 3 characters.
+      } @else if (form.controls.name.hasError('maxlength')) {
+        The name can be at most 30 characters.
+      } @else if (form.controls.name.hasError('nameTaken')) {
+        A team with this name already exists.
+      }
+    </p>
+  } @else if (form.controls.name.pending) {
+    <p class="team-builder__hint">Checking name…</p>
+  }
+
+  <label class="team-builder__label" for="team-search">
+    Pokémon ({{ selectedPokemon().length }}/{{ maxTeamSize }})
+  </label>
+
+  @if (selectedPokemon().length) {
+    <ul class="team-builder__chips">
+      @for (p of selectedPokemon(); track p.id) {
+        <li class="team-builder__chip">
+          <img [src]="p.sprite" [alt]="" width="28" height="28" />
+          <span>{{ p.name }}</span>
+          <button
+            type="button"
+            class="team-builder__chip-remove"
+            [attr.aria-label]="'Remove ' + p.name"
+            (click)="removePokemon(p.id)"
+          >
+            ×
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="team-builder__autocomplete">
+    <input
+      id="team-search"
+      class="team-builder__input"
+      [formControl]="search"
+      [placeholder]="isFull() ? 'Team is full' : 'Search by name or number'"
+      autocomplete="off"
+    />
+
+    @if (dropdownOpen()) {
+      <div class="team-builder__dropdown" role="listbox">
+        @switch (pokemonStatus()) {
+          @case ('error') {
+            <div class="team-builder__dropdown-message">
+              <p>We couldn't load the Pokémon list.</p>
+              <button type="button" class="team-builder__retry" (click)="retryPokemon()">
+                Retry
+              </button>
+            </div>
+          }
+          @case ('success') {
+            @for (p of suggestions(); track p.id) {
+              <button
+                type="button"
+                role="option"
+                class="team-builder__option"
+                (click)="addPokemon(p)"
+              >
+                <img [src]="p.sprite" [alt]="" width="32" height="32" />
+                <span class="team-builder__option-name">{{ p.name }}</span>
+                @for (type of p.types; track type) {
+                  <app-type-badge [type]="type" />
+                }
+              </button>
+            } @empty {
+              <p class="team-builder__dropdown-message">No Pokémon match "{{ query() }}".</p>
+            }
+          }
+          @default {
+            @for (row of [1, 2, 3]; track row) {
+              <div class="team-builder__option team-builder__option--skeleton" aria-hidden="true">
+                <span class="team-builder__skeleton"></span>
+              </div>
+            }
+          }
+        }
+      </div>
+    }
+  </div>
+
+  @if (showErrors('pokemonIds')) {
+    <p class="team-builder__error" role="alert">
+      @if (form.controls.pokemonIds.hasError('teamTooSmall')) {
+        Pick at least one Pokémon.
+      } @else {
+        A team can have at most {{ maxTeamSize }} Pokémon.
+      }
+    </p>
+  }
+
+  <button type="submit" class="team-builder__submit" [disabled]="form.pending">
+    Create team
+  </button>
+</form>

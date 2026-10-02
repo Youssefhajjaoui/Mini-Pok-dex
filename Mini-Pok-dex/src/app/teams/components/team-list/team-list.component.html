@@ -1,0 +1,67 @@
+<section class="team-list">
+  <h2 class="team-list__title">Teams</h2>
+
+  @switch (status()) {
+    @case ('error') {
+      <div class="team-list__message team-list__message--error" role="alert">
+        <p>We couldn't load your teams. {{ error() }}</p>
+        <button type="button" class="team-list__retry" (click)="retried.emit()">Retry</button>
+      </div>
+    }
+    @case ('success') {
+      <ul class="team-list__items">
+        @for (team of teams(); track team.id) {
+          <li
+            class="team-list__item"
+            [class.team-list__item--selected]="team.id === selectedId()"
+            [class.team-list__item--pending]="team.pending || isDeleting(team)"
+          >
+            <button
+              type="button"
+              class="team-list__select"
+              [disabled]="team.pending"
+              [attr.aria-pressed]="team.id === selectedId()"
+              (click)="teamSelected.emit(team.id)"
+            >
+              <span class="team-list__name">{{ team.name }}</span>
+              <span class="team-list__meta">
+                @if (team.pending) {
+                  Saving…
+                } @else if (isDeleting(team)) {
+                  Deleting…
+                } @else {
+                  {{ team.pokemonIds.length }} Pokémon · {{ team.createdAt | date: 'mediumDate' }}
+                }
+              </span>
+              <span class="team-list__sprites">
+                @for (p of members(team); track p.id) {
+                  <img [src]="p.sprite" [alt]="p.name" [title]="p.name" width="36" height="36" />
+                }
+              </span>
+            </button>
+            <button
+              type="button"
+              class="team-list__delete"
+              [disabled]="team.pending || isDeleting(team)"
+              [attr.aria-label]="'Delete ' + team.name"
+              (click)="teamDeleted.emit(team.id)"
+            >
+              Delete
+            </button>
+          </li>
+        } @empty {
+          <li class="team-list__message">No teams yet. Build your first one above.</li>
+        }
+      </ul>
+    }
+    @default {
+      <ul class="team-list__items" aria-hidden="true">
+        @for (row of [1, 2, 3]; track row) {
+          <li class="team-list__item team-list__item--skeleton">
+            <span class="team-list__skeleton"></span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
