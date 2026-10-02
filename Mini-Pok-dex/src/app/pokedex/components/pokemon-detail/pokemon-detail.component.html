@@ -1,0 +1,126 @@
+<header class="detail__header">
+  <h2 id="pokemon-detail-title" class="detail__heading">
+    @if (pokemon(); as p) {
+      <span class="detail__number">#{{ p.id }}</span>
+      <span class="detail__name">{{ p.name }}</span>
+    } @else {
+      Pokémon details
+    }
+  </h2>
+  <button
+    #closeButton
+    type="button"
+    class="detail__close"
+    aria-label="Close details"
+    (click)="closed.emit()"
+  >
+    ✕
+  </button>
+</header>
+
+<div class="detail__body">
+  @switch (status()) {
+    @case ('error') {
+      <div class="detail__state detail__state--error" role="alert">
+        <p>We couldn't load this Pokémon. {{ error() }}</p>
+        <button type="button" class="detail__button" (click)="retryPokemon()">Retry</button>
+      </div>
+    }
+    @case ('success') {
+      @if (pokemon(); as p) {
+        <section class="detail__hero">
+          <img class="detail__sprite" [src]="p.sprite" [alt]="p.name" width="120" height="120" />
+          <div class="detail__types">
+            @for (type of p.types; track type) {
+              <app-type-badge [type]="type" />
+            }
+          </div>
+          <dl class="detail__measures">
+            <div>
+              <dt>Height</dt>
+              <dd>{{ p.height / 10 | number: '1.1-1' }} m</dd>
+            </div>
+            <div>
+              <dt>Weight</dt>
+              <dd>{{ p.weight / 10 | number: '1.1-1' }} kg</dd>
+            </div>
+            <div>
+              <dt>Total</dt>
+              <dd>{{ p.total }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="detail__section" aria-labelledby="detail-stats-title">
+          <h3 id="detail-stats-title" class="detail__section-title">Base stats</h3>
+          <app-stats-radar [pokemon]="p" />
+          <ul class="detail__stats">
+            @for (stat of stats(); track stat.label) {
+              <li class="detail__stat">
+                <span class="detail__stat-label">{{ stat.label }}</span>
+                <span class="detail__stat-value">{{ stat.value }}</span>
+                <span class="detail__stat-track" aria-hidden="true">
+                  <span class="detail__stat-bar" [style.width.%]="(stat.value / 255) * 100"></span>
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="detail__section" aria-labelledby="detail-abilities-title">
+          <h3 id="detail-abilities-title" class="detail__section-title">Abilities</h3>
+          @switch (abilities().status) {
+            @case ('error') {
+              <div class="detail__state detail__state--error detail__state--compact" role="alert">
+                <p>Couldn't load abilities. {{ abilities().error }}</p>
+                <button type="button" class="detail__button" (click)="retryAbilities()">Retry</button>
+              </div>
+            }
+            @case ('success') {
+              @if (abilities().abilities.length === 0) {
+                <p class="detail__state detail__state--compact">No abilities listed.</p>
+              } @else {
+                <ul class="detail__abilities">
+                  @for (ability of abilities().abilities; track ability.name) {
+                    <li class="detail__ability">
+                      <div class="detail__ability-head">
+                        <span class="detail__ability-name">{{ ability.name.replaceAll('-', ' ') }}</span>
+                        @if (ability.hidden) {
+                          <span class="detail__ability-tag">Hidden</span>
+                        }
+                      </div>
+                      @if (ability.effect) {
+                        <p class="detail__ability-effect">{{ ability.effect }}</p>
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            }
+            @default {
+              <ul class="detail__abilities" aria-busy="true" aria-label="Loading abilities">
+                @for (row of [1, 2]; track row) {
+                  <li class="detail__ability">
+                    <span class="detail__skeleton detail__skeleton--title"></span>
+                    <span class="detail__skeleton"></span>
+                  </li>
+                }
+              </ul>
+            }
+          }
+        </section>
+      } @else {
+        <div class="detail__state">
+          <p>This Pokémon isn't in the Kanto list.</p>
+        </div>
+      }
+    }
+    @default {
+      <div class="detail__loading" aria-busy="true" aria-label="Loading Pokémon">
+        <span class="detail__skeleton detail__skeleton--sprite"></span>
+        <span class="detail__skeleton detail__skeleton--title"></span>
+        <span class="detail__skeleton detail__skeleton--chart"></span>
+      </div>
+    }
+  }
+</div>
