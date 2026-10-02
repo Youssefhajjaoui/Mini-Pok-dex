@@ -41,6 +41,14 @@
             }
           </label>
 
+          <app-type-filter
+            class="pokedex__desktop-only"
+            [types]="types()"
+            [selected]="selectedType()"
+            [loading]="status() === 'loading' || status() === 'idle'"
+            (selectedChange)="selectType($event)"
+          />
+
           <app-page-size-toggle
             class="pokedex__desktop-only"
             [value]="pageSize()"
@@ -63,14 +71,6 @@
             }
           </button>
         </div>
-
-        <app-type-filter
-          class="pokedex__desktop-only"
-          [types]="types()"
-          [selected]="selectedType()"
-          [loading]="status() === 'loading' || status() === 'idle'"
-          (selectedChange)="selectType($event)"
-        />
 
         @if (selectedType(); as type) {
           <div class="pokedex__active-filters pokedex__mobile-only">
