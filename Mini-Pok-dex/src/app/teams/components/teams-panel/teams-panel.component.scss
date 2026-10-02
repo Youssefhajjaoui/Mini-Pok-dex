@@ -1,44 +1,52 @@
+@use '../../../common/styles/shared' as *;
+
 .teams-panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 
   &__summary {
-    padding: 16px;
-    border: 1px solid var(--color-primary);
-    border-radius: 12px;
-    background: var(--color-surface);
+    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-color: var(--color-primary);
   }
 
   &__summary-title {
-    margin: 0 0 8px;
-    font-size: 1.1rem;
+    @include card-title;
   }
 
   &__stat {
-    margin: 0 0 10px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
     color: var(--color-text-muted);
 
     strong {
+      font-size: var(--font-size-lg);
+      font-variant-numeric: tabular-nums;
       color: var(--color-text);
-      font-size: 1.1rem;
     }
   }
 
   &__types {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   &__type {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-1);
   }
 
   &__type-count {
-    font-size: 0.85rem;
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
     color: var(--color-text-muted);
   }
 }

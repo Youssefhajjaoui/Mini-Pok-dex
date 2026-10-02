@@ -1,97 +1,107 @@
+@use '../../../common/styles/shared' as *;
+
 .team-builder {
+  @include card;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background: var(--color-surface);
+  gap: var(--space-4);
+  padding: var(--space-5);
 
   &__title {
-    margin: 0 0 8px;
-    font-size: 1.1rem;
+    @include card-title;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
   }
 
   &__label {
-    margin-top: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
+    @include field-label;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__counter {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
   }
 
   &__input {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: var(--color-background);
-    color: var(--color-text);
-    font: inherit;
-
-    &:focus {
-      outline: 2px solid var(--color-primary);
-      outline-offset: -1px;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-    }
+    @include control;
 
     &--invalid {
       border-color: var(--color-danger);
     }
   }
 
+  &__error,
+  &__hint {
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+  }
+
   &__error {
-    margin: 0;
-    font-size: 0.85rem;
     color: var(--color-danger);
   }
 
   &__hint {
-    margin: 0;
-    font-size: 0.85rem;
     color: var(--color-text-muted);
   }
+
+  // Chips
 
   &__chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--space-2);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   &__chip {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 6px 2px 2px;
+    gap: var(--space-1);
+    height: 32px;
+    padding: 0 var(--space-1) 0 0;
+    border: 1px solid var(--color-border);
     border-radius: 999px;
     background: var(--color-surface-raised);
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
     text-transform: capitalize;
+  }
 
-    img {
-      image-rendering: pixelated;
-    }
+  &__chip-sprite {
+    margin: 0 -2px 0 -2px;
+    image-rendering: pixelated;
   }
 
   &__chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
     border: none;
+    border-radius: 50%;
     background: none;
     color: var(--color-text-muted);
-    font-size: 1rem;
+    font-size: var(--font-size-md);
     line-height: 1;
     cursor: pointer;
 
     &:hover {
+      background: var(--color-border);
       color: var(--color-danger);
     }
   }
+
+  // Autocomplete
 
   &__autocomplete {
     position: relative;
@@ -99,108 +109,85 @@
 
   &__dropdown {
     position: absolute;
-    top: calc(100% + 4px);
+    top: calc(100% + var(--space-1));
     left: 0;
     right: 0;
     z-index: 10;
-    max-height: 300px;
+    max-height: 288px;
+    padding: var(--space-1);
     overflow-y: auto;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     background: var(--color-surface-raised);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 40%);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 45%);
   }
 
-  &__dropdown-message {
-    margin: 0;
-    padding: 12px;
+  &__dropdown-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    font-size: var(--font-size-sm);
     text-align: center;
     color: var(--color-text-muted);
-
-    p {
-      margin: 0 0 8px;
-    }
   }
 
   &__option {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     width: 100%;
-    padding: 4px 10px;
+    height: 44px;
+    padding: 0 var(--space-2);
     border: none;
+    border-radius: var(--radius-sm);
     background: none;
-    color: inherit;
-    font: inherit;
     text-align: left;
     cursor: pointer;
 
     &:hover,
     &:focus-visible {
       background: var(--color-border);
-    }
-
-    img {
-      image-rendering: pixelated;
+      outline: none;
     }
 
     &--skeleton {
-      height: 40px;
       cursor: default;
+
+      &:hover {
+        background: none;
+      }
     }
+  }
+
+  &__option-sprite {
+    flex-shrink: 0;
+    image-rendering: pixelated;
   }
 
   &__option-name {
     flex: 1;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
     text-transform: capitalize;
   }
 
+  &__option-types {
+    display: flex;
+    gap: var(--space-1);
+  }
+
   &__skeleton {
-    display: block;
+    @include skeleton;
+  }
+
+  &__retry {
+    @include button-secondary;
+  }
+
+  &__submit {
+    @include button-primary;
     width: 100%;
-    height: 14px;
-    border-radius: 4px;
-    background: linear-gradient(
-      90deg,
-      var(--color-surface) 25%,
-      var(--color-border) 50%,
-      var(--color-surface) 75%
-    );
-    background-size: 200% 100%;
-    animation: team-builder-shimmer 1.2s infinite linear;
-  }
-
-  &__retry,
-  &__submit {
-    padding: 8px 20px;
-    border: none;
-    border-radius: 8px;
-    background: var(--color-primary);
-    color: #fff;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-
-    &:hover:not(:disabled) {
-      filter: brightness(1.1);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-
-  &__submit {
-    margin-top: 12px;
-  }
-}
-
-@keyframes team-builder-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
   }
 }

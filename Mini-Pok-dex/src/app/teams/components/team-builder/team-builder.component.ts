@@ -57,8 +57,6 @@ export class TeamBuilderComponent {
     { initialValue: [] },
   );
 
-  private readonly rawSearch = toSignal(this.search.valueChanges, { initialValue: '' });
-
   private readonly searchText = toSignal(this.search.valueChanges, { initialValue: '' });
 
   protected readonly query = toSignal(
